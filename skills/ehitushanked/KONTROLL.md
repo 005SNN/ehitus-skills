@@ -4,6 +4,10 @@ Eesmärk: hanke kogu alusdokumentide pakett → üks HTML-aruanne. Aruandes on *
 
 Iga leid on **tõendatav**: sõnasõnaline tsitaat (kuni ~30 sõna, kopeeritud `tekst/` failist täpselt nii, nagu seal on) ja allikas kujul `Fail.pdf, lk 12` või `Hankelepingu projekt, p 9.3`. Renderdaja kontrollib iga tsitaadi masinaga üle. Kokkuvõte või ümbersõnastus tsitaadi väljal kukub kontrollis läbi.
 
+## Olemasolev aruanne
+
+Kui `ehitushanked/<viitenumber>/aruanne.json` on juba olemas ja kasutaja ei palu uut kontrolli, ära kontrolli uuesti. Renderda olemasolev (samm 6) ja näita seda.
+
 ## Kiirkontroll
 
 Kui kasutaja palub kiiret kontrolli või aega on vähe, tee sammud 1–6 nii: loe ainult A-rühm ja energia (EE), tuleohutuse (TO) ja konstruktsiooni (EK) seletuskirjad; alamagente kuni 4. Märgi metoodikasse „kiirkontroll” ja millised osad jäid lugemata. Kestus ~10 min täiskontrolli ~30 min asemel.
