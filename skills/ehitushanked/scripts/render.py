@@ -349,7 +349,7 @@ def quote(q: str | None, source: str | None, ver: Verifier) -> str:
             f'{" " + mark if mark else ""}</figcaption></figure>')
 
 
-def render_report(d: dict, ver: Verifier) -> str:
+def render_report(d: dict, ver: Verifier, short: bool = False) -> str:
     h = d.get("hange", {})
     o = d.get("otsus", {})
     m = dict(d.get("metoodika", {}))
@@ -358,6 +358,12 @@ def render_report(d: dict, ver: Verifier) -> str:
 
     vastuolud = sorted(d.get("vastuolud", []), key=lambda x: SEV_ORDER.index(sev(x.get("tõsidus"))))
     riskid = sorted(d.get("riskid", []), key=lambda x: SEV_ORDER.index(sev(x.get("tõsidus"))))
+    n_v, n_r = len(vastuolud), len(riskid)
+    if short:
+        vastuolud, riskid = vastuolud[:3], riskid[:3]
+        d = {k: v for k, v in d.items() if k not in ("votmenaitajad", "kvalifikatsioon", "puuduv_info",
+                                                       "kusimused_hankijale", "metoodika")}
+        m = {}
 
     deadline = date_et(h.get("tahtaeg"))
     left = days_left(h.get("tahtaeg"))
@@ -398,8 +404,9 @@ def render_report(d: dict, ver: Verifier) -> str:
         body += "</tbody></table>"
 
     if vastuolud:
-        body += section("Vastuolud dokumentide vahel", len(vastuolud),
-                        "Kohad, kus kaks hanke dokumenti ütlevad sama asja kohta erinevat.")
+        body += section("Vastuolud dokumentide vahel", n_v,
+                        f"Kolm olulisemat {n_v}-st. Kohad, kus kaks hanke dokumenti ütlevad sama asja kohta erinevat."
+                        if short and n_v > 3 else "Kohad, kus kaks hanke dokumenti ütlevad sama asja kohta erinevat.")
         for i, v in enumerate(vastuolud, 1):
             s = sev(v.get("tõsidus"))
             a, b = v.get("a") or {}, v.get("b") or {}
@@ -414,8 +421,9 @@ def render_report(d: dict, ver: Verifier) -> str:
             body += "</article>"
 
     if riskid:
-        body += section("Lepingu riskid võrreldes ETÜ 2013-ga", len(riskid),
-                        "Tingimused, mis nihutavad riski tavapärasest rohkem töövõtja kanda.")
+        body += section("Lepingu riskid võrreldes ETÜ 2013-ga", n_r,
+                        f"Kolm olulisemat {n_r}-st. Tingimused, mis nihutavad riski tavapärasest rohkem töövõtja kanda."
+                        if short and n_r > 3 else "Tingimused, mis nihutavad riski tavapärasest rohkem töövõtja kanda.")
         for i, r in enumerate(riskid, 1):
             s = sev(r.get("tõsidus"))
             body += (f'<article class="leid {s}"><h3><span class="id">R{i}</span>{e(r.get("teema"))}'
@@ -479,6 +487,7 @@ def main() -> None:
     a_ = sp.add_parser("aruanne")
     a_.add_argument("json")
     a_.add_argument("--tekst", help="hanke tekst/ kaust tsitaatide kontrolliks")
+    a_.add_argument("--luhike", action="store_true", help="ainult otsus ja 3+3 olulisemat leidu (vestlusesse põimimiseks)")
     a_.add_argument("--out", required=True)
     for sub in (r, a_):
         sub.add_argument("--inline", action="store_true", help="vestlusesse põimitav vaade (T3 Code html_render)")
@@ -491,7 +500,7 @@ def main() -> None:
         out = render_radar(data, scores, a.top)
     else:
         ver = Verifier(a.tekst)
-        out = render_report(data, ver)
+        out = render_report(data, ver, a.luhike)
         if ver.corpus is not None:
             print(f"Tsitaadid: {ver.ok} leitud sõna-sõnalt, {ver.bad} vajavad käsitsi kontrolli.", file=sys.stderr)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)

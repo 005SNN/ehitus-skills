@@ -33,4 +33,4 @@ Aruande ja radari skoorid kirjutatakse JSON-ina ning renderdatakse skriptiga, ni
 
 ## Tulemuse näitamine
 
-Lisaks HTML-failile: kui sul on tööriist `html_render` (nt T3 Code), renderda ka vestlusesse põimitav vaade lipuga `--inline` (radaril koos `--top 10`) ja näita seda `html_render`-iga, sisuks faili HTML. Muidu ava fail (`xdg-open` / `open`) ja anna tee.
+Lisaks HTML-failile: kui sul on tööriist `html_render` (nt T3 Code), renderda ka vestlusesse põimitav vaade lipuga `--inline` (radaril koos `--top 10`, aruandel koos `--luhike`) ja näita seda `html_render`-iga, sisuks faili HTML. Muidu ava fail (`xdg-open` / `open`) ja anna tee.

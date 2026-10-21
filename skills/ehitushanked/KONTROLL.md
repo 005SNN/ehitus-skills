@@ -4,6 +4,10 @@ Eesmärk: hanke kogu alusdokumentide pakett → üks HTML-aruanne. Aruandes on *
 
 Iga leid on **tõendatav**: sõnasõnaline tsitaat (kuni ~30 sõna, kopeeritud `tekst/` failist täpselt nii, nagu seal on) ja allikas kujul `Fail.pdf, lk 12` või `Hankelepingu projekt, p 9.3`. Renderdaja kontrollib iga tsitaadi masinaga üle. Kokkuvõte või ümbersõnastus tsitaadi väljal kukub kontrollis läbi.
 
+## Kiirkontroll
+
+Kui kasutaja palub kiiret kontrolli või aega on vähe, tee sammud 1–6 nii: loe ainult A-rühm ja energia (EE), tuleohutuse (TO) ja konstruktsiooni (EK) seletuskirjad; alamagente kuni 4. Märgi metoodikasse „kiirkontroll” ja millised osad jäid lugemata. Kestus ~10 min täiskontrolli ~30 min asemel.
+
 ## 1. Lae dokumendid
 
 ```bash
@@ -54,8 +58,8 @@ Valmis, kui kõik 14 rida on käsitletud.
 ## 5. Otsus ja küsimused
 
 - **Küsimused hankijale**: iga vastuolu ja olulise puuduva info kohta üks konkreetne küsimus koos viitega. Need moodustavad selgitustaotluse.
-- **Otsus**: kaalu riske ja `firma-profiil.md`-d (kvalifikatsioon, maht, riskitaluvus). Põhjendus 2–4 lausega, nimeta otsustavad tegurid.
-- **Kokkuvõte**: 3–6 punkti, mida juht peab teadma.
+- **Otsus**: kaalu riske ja `firma-profiil.md`-d (kvalifikatsioon, maht, riskitaluvus). Põhjendus kuni 3 lauset ja kuni 60 sõna: mis on otsustav ja mis peab muutuma. Detailid jäävad leidudesse.
+- **Kokkuvõte**: 3–5 punkti, igaüks üks lause kuni 25 sõna, olulisim enne. Viita leiu tunnusele (V1, R2), kui see on olemas: vastuolud ja riskid nummerdatakse aruandes tõsiduse järjekorras.
 
 ## 6. Renderda ja kontrolli
 
