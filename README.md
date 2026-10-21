@@ -1,4 +1,4 @@
-# Ehitus AI skillid 🏗️
+# Ehitus AI skillid
 
 AI-agendi skillid Eesti ehitusettevõtetele. Töötavad Claude Code'i, Codexi, Cursori ja teiste [Agent Skills](https://skills.sh) toega agentidega.
 
