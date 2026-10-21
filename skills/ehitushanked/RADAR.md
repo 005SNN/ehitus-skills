@@ -33,7 +33,7 @@ Valmis, kui hinnangute arv = hangete arv lühivaate pealkirjas.
 Kirjuta `ehitushanked/skoorid.json` (skeem: SKEEMID.md → Radari skoorid), siis:
 
 ```bash
-python3 SKILL_DIR/scripts/render.py radar ehitushanked/radar.json --skoorid ehitushanked/skoorid.json --out ehitushanked/radar.html
+python3 SKILL_DIR/scripts/render.py radar ehitushanked/radar.json --skoorid ehitushanked/skoorid.json --turg --out ehitushanked/radar.html
 ```
 
 Ava fail (`xdg-open` / `open`) või anna kasutajale tee.

@@ -21,6 +21,8 @@ Skriptid (ainult Pythoni standardteek) on selle skilli kaustas: `scripts/rh.py` 
 - **Hankeradar**: „leia hanked”, „mis hanked on avatud”, „mis meile sobib”, hommikune ülevaade → loe [RADAR.md](RADAR.md) ja järgi seda.
 - **Hankekontroll**: kasutaja annab viitenumbri (nt `315920`), registri lingi või ütleb „kontrolli seda hanget”, „kas pakkuda”, „leia vastuolud” → loe [KONTROLL.md](KONTROLL.md) ja järgi seda.
 
+- **Konkurendid ja hinnatase**: „kes võidab koolihoonete hankeid”, „mis hinnaga sarnased tööd lähevad”, „kui palju pakkujaid tuleb” → käivita `python3 SKILL_DIR/scripts/turg.py vordle --cpv <CPV> [--maksumus N] [--piirkond EE001] --out ehitushanked/turg-<CPV>.json` ja vasta JSON-i põhjal. Numbrid tulevad registri lepinguteadetest. Esita need täpselt ja nimeta valim (CPV, periood, lepingute arv). Hinnaindeks: `turg.py indeks --kestus-kuud N --maksumus N`.
+
 Radarilt jõuab kontrolli loomulikult: pärast radarit paku välja kõrgeima skooriga hanke kontroll.
 
 ## Firma profiil

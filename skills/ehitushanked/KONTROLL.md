@@ -22,6 +22,15 @@ Pakett võib olla üle 1 GB: allalaadimine ja tekstiks teisendamine võtab 1–5
 
 Valmis, kui `INDEX.md` on olemas. Loe see läbi: failid on rühmitatud **A** (hankedokumendid), **B** (projekti seletuskirjad ja spetsifikatsioonid), **C** (muu tekst) ja **D** (joonised).
 
+## 1b. Turuandmed (käivita taustal kohe pärast sammu 1)
+
+```bash
+python3 SKILL_DIR/scripts/turg.py vordle --cpv <põhi-CPV meta.json-ist> --maksumus <cost> --kestus-kuud <lepingu kuud> \
+  --hankija "<hankija nimi>" --piirkond <NUTS3> --out ehitushanked/<nr>/turg.json
+```
+
+CPV, maksumuse ja lepingu kuupäevad leiad failist `meta.json` (`general.procurementCpvDtos`, `general.cost`, `general.startDate`/`endDate`). Piirkond: EE001 Põhja-Eesti (Harju), EE004 Lääne-, EE008 Lõuna-, EE009 Kesk-, EE00A Kirde-Eesti. Kui maksumus puudub, jäta `--maksumus` ära. Esimene käivitus laeb 24 kuu lepingud (~1 min), edasi vahemälust. `render.py` lisab `turg.json` aruandesse ise. Sinu ülesanne on viidata sellele otsuses: hinnavahemik, pakkujate arv ja hinnarisk.
+
 ## 2. Kogu faktid
 
 Faktid kogutakse **faktiperekondade** kaupa, et neid saaks hiljem mehaaniliselt võrrelda. Kasuta täpselt neid `teema` võtmeid:

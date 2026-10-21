@@ -20,6 +20,11 @@ Laeb registrist alla hanke kogu alusdokumentide paketi (sageli üle 1 GB, sadu f
 - valmis **selgitustaotlus** hankijale;
 - soovitus **PAKKUDA / PAKKUDA TINGIMUSTEL / MITTE PAKKUDA**.
 
+**Konkurendid ja hinnatase.** *„Kes võidab koolihoonete ehitushankeid ja mis hinnaga?”*
+Registri lepingu sõlmimise teadetest (viimased 24 kuud, ~5 600 ehituslepingut) saadakse: kes sarnaseid töid võidab, mitu pakkujat tavaliselt tuleb ja kui palju võidupakkumine hankija eelarvest erineb. Sellest tuleb tõenäoline võiduhinna vahemik. Statistikaameti ehitushinnaindeksiga arvutatakse fikseeritud hinna risk lepingu kestuse peale. Hankekontrolli aruandes on see eraldi jaotis, radaris on iga hanke juures pakkujate tavapärane arv.
+
+**Selgitustaotlus Wordis.** Aruande küsimustest tehakse ametlik kiri (.docx), mille saab saata registri kaudu.
+
 **Iga väide on tõendatav.** Igal leiul on sõnasõnaline tsitaat ja allikas (fail, lehekülg). Renderdaja kontrollib iga tsitaadi masinaga dokumentide tekstist üle (✓ / ⚠). AI teeb mustandi, otsuse teeb inimene.
 
 ### Kasutamine
@@ -35,6 +40,8 @@ Sobib kokku nende skillidega: [`anthropics/skills`](https://skills.sh/anthropics
 ### Andmeallikad
 
 - Riigihangete registri avalik RSS ja avalik API (`riigihanked.riik.ee/rhr/api/public/v1`): hanke üldandmed ja alusdokumentide pakett. Sisselogimist ei nõua.
+- Registri avaandmed (eForms XML, kuude kaupa): lepingu sõlmimise teated ja hanketeated.
+- Statistikaamet, ehitushinnaindeks IA10 (andmed.stat.ee API).
 - ETÜ 2013 (Ehituse töövõtulepingute üldtingimused), kui see on hanke paketis.
 
 ### Piirangud

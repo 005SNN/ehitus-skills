@@ -77,6 +77,7 @@ td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--rule); vertical-a
 td.num, th.num { text-align: right; white-space: nowrap; }
 td.id { width: 44px; font-weight: 700; white-space: nowrap; }
 .tingimused td:first-child { width: 34%; color: var(--pencil); }
+h3.alam { font-size: 15px; font-weight: 650; margin: 22px 0 6px; }
 
 /* Leiud */
 .leid { border-left: 3px solid var(--rule); padding: 2px 0 2px 16px; margin: 22px 0; }
@@ -250,7 +251,7 @@ if (otsing) {
 
 # ---------------------------------------------------------------- radar
 
-def render_radar(data: dict, scores: dict | None, top: int | None = None) -> str:
+def render_radar(data: dict, scores: dict | None, top: int | None = None, market: dict | None = None) -> str:
     rows = data.get("hanked", [])
     by_ref = {}
     profile = ""
@@ -300,6 +301,8 @@ def render_radar(data: dict, scores: dict | None, top: int | None = None) -> str
         meta = [r.get("hankija"), r.get("viitenumber"), r.get("menetlus")]
         if r.get("raamleping"):
             meta.append("raamleping")
+        cpv5 = next((c[:5] for c in r.get("cpv") or [] if c.startswith("45")), None)
+        mk = (market or {}).get(cpv5)
         body += (f'<td><a class="hange-nimi" href="{e(r.get("link"))}" target="_blank" rel="noopener">{e(r.get("nimi"))}</a>'
                  f'<div class="lisainfo">{e(", ".join(str(m) for m in meta if m))}</div>')
         if s:
@@ -307,6 +310,9 @@ def render_radar(data: dict, scores: dict | None, top: int | None = None) -> str
                 body += f'<div class="põhjendus">{e(pick(s, "pohjendus", "põhjendus"))}</div>'
             if s.get("punased_lipud"):
                 body += f'<div class="lipud">{e("; ".join(s["punased_lipud"]))}</div>'
+        if mk:
+            body += (f'<div class="lisainfo">Sarnased hanked 24 kuu jooksul (CPV {cpv5}*): {mk["n"]} lepingut, '
+                     f'mediaan {n_et(mk["pakkujaid"])} pakkujat</div>')
         body += (f'</td><td class="num peida-kitsal">{e(eur(r.get("eeldatav_maksumus")))}</td>'
                  f'<td class="num">{e(date_et((r.get("tahtaeg") or "")[:10]))}'
                  f'<div class="lisainfo">{e(days_left(r.get("tahtaeg")))}</div></td></tr>')
@@ -349,7 +355,74 @@ def quote(q: str | None, source: str | None, ver: Verifier) -> str:
             f'{" " + mark if mark else ""}</figcaption></figure>')
 
 
-def render_report(d: dict, ver: Verifier, short: bool = False) -> str:
+def pct(x) -> str:
+    if x is None:
+        return "–"
+    v = x * 100
+    return (f"{v:.1f}%" if abs(v) < 10 else f"{v:.0f}%").replace(".", ",")
+
+
+def n_et(x) -> str:
+    if x is None:
+        return "–"
+    return (f"{x:g}" if float(x) != int(x) else str(int(x))).replace(".", ",")
+
+
+def meur(v) -> str:
+    return f"{v / 1e6:.2f} M€".replace(".", ",") if v else "–"
+
+
+def market_section(t: dict, short: bool) -> str:
+    """Konkurents ja hinnatase turg.py väljundist. Kõik numbrid on registri andmetest, mitte mudeli hinnang."""
+    p = t.get("pakkujaid", {})
+    r = t.get("voit_vs_eelarve", {})
+    band = t.get("hinnavahemik")
+    risk = t.get("hinnarisk") or {}
+    rows = [("Võrreldavaid lepinguid", f'{t.get("vordluslepinguid")} viimase {t.get("periood_kuud")} kuu jooksul ({e(t.get("alus"))})'),
+            ("Pakkujaid hankes", f'mediaan {n_et(p.get("mediaan"))}' + (f', ühe pakkujaga hankeid {pct(p.get("uks_pakkuja_osakaal"))}' if p.get("uks_pakkuja_osakaal") else ""))]
+    if r.get("n"):
+        rows.append(("Võidupakkumine hankija eelarvest",
+                     f'mediaan {pct(r.get("mediaan"))}, vahemik {pct(r.get("p25"))}–{pct(r.get("p75"))}; '
+                     f'alla eelarve jäi {pct(r.get("alla_eelarve_osakaal"))} ({r["n"]} lepingut, {e(r.get("alus"))})'))
+    if band:
+        rows.append(("Tõenäoline võiduhind selles hankes",
+                     f'<b>{meur(band["p25"])} – {meur(band["p75"])}</b>, mediaan {meur(band["mediaan"])} '
+                     f'(eelarve {meur(band["eelarve"])})'))
+    if risk.get("summa_eur"):
+        g = risk.get("grupid", {})
+        rows.append(("Hinnarisk fikseeritud hinnaga",
+                     f'+{pct(risk.get("eeldatav_kallinemine"))} ehk ~{eur(round(risk["summa_eur"], -3))} {risk.get("kestus_kuud")} kuu jooksul. '
+                     f'Ehitushinnaindeks {e(risk.get("kvartal"))}: +{pct(risk.get("aastamuutus"))} aastaga'
+                     + (f', materjalid +{pct(g.get("Ehitusmaterjal"))}' if g.get("Ehitusmaterjal") else "")))
+    html_ = '<table class="tingimused"><tbody>' + "".join(f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in rows) + "</tbody></table>"
+    winners = t.get("sagedasemad_voitjad") or []
+    if winners:
+        html_ += ('<h3 class="alam">Kes võidab sarnaseid hankeid</h3><table><thead><tr><th>Ettevõte</th><th class="num">Võite</th>'
+                  '<th class="num">Summa kokku</th><th class="num peida-kitsal">Pakkujaid keskmiselt</th></tr></thead><tbody>')
+        for w in winners[: 5 if short else 10]:
+            html_ += (f'<tr><td>{e(w["nimi"])}</td><td class="num">{w["voite"]}</td><td class="num">{e(eur(w["summa"]))}</td>'
+                      f'<td class="num peida-kitsal">{n_et(w.get("keskmiselt_pakkujaid"))}</td></tr>')
+        html_ += "</tbody></table>"
+    recent = t.get("viimased") or []
+    if recent and not short:
+        html_ += ('<h3 class="alam">Viimased võrreldavad lepingud</h3><table><thead><tr><th>Kuupäev</th><th>Hange ja võitja</th>'
+                  '<th class="num">Summa</th><th class="num">Pakkujaid</th></tr></thead><tbody>')
+        for x in recent[:10]:
+            html_ += (f'<tr><td class="num" style="text-align:left">{e(date_et(x["kuupaev"]))}</td><td>{e(x["nimi"])}'
+                      f'<div class="lisainfo">{e(x.get("hankija"))}; võitja {e(", ".join(x.get("voitja") or []))}</div></td>'
+                      f'<td class="num">{e(eur(x["summa"]))}</td><td class="num">{e(x.get("pakkumusi") or "–")}</td></tr>')
+        html_ += "</tbody></table>"
+    own = t.get("hankija_ajalugu") or []
+    if own and not short:
+        html_ += '<h3 class="alam">Sama hankija varasemad ehituslepingud</h3><ul>'
+        for x in own[:5]:
+            html_ += (f'<li>{e(date_et(x["kuupaev"]))} {e(x["nimi"])}: {e(", ".join(x.get("voitja") or []))}, '
+                      f'{e(eur(x["summa"]))}, {e(x.get("pakkumusi") or "?")} pakkujat</li>')
+        html_ += "</ul>"
+    return html_
+
+
+def render_report(d: dict, ver: Verifier, short: bool = False, turg: dict | None = None) -> str:
     h = d.get("hange", {})
     o = d.get("otsus", {})
     m = dict(d.get("metoodika", {}))
@@ -394,6 +467,11 @@ def render_report(d: dict, ver: Verifier, short: bool = False) -> str:
     if d.get("kokkuvote"):
         body += "<ul>" + "".join(f"<li>{e(x)}</li>" for x in d["kokkuvote"]) + "</ul>"
     body += "</div></div>"
+
+    if turg:
+        body += section("Konkurents ja hinnatase", None,
+                        "Riigihangete registri lepingute andmetest: kes sarnaseid töid võidab, mitme pakkujaga ja mis hinnaga.")
+        body += market_section(turg, short)
 
     if d.get("votmenaitajad"):
         body += section("Põhitingimused")
@@ -483,6 +561,7 @@ def main() -> None:
     r.add_argument("json")
     r.add_argument("--skoorid")
     r.add_argument("--top", type=int, help="näita ainult N parimat (vestlusesse põimimiseks)")
+    r.add_argument("--turg", action="store_true", help="lisa iga hanke juurde sarnaste lepingute pakkujate arv (turg.py)")
     r.add_argument("--out", required=True)
     a_ = sp.add_parser("aruanne")
     a_.add_argument("json")
@@ -497,10 +576,20 @@ def main() -> None:
     data = json.loads(Path(a.json).read_text(encoding="utf-8"))
     if a.cmd == "radar":
         scores = json.loads(Path(a.skoorid).read_text(encoding="utf-8")) if a.skoorid else None
-        out = render_radar(data, scores, a.top)
+        market = None
+        if a.turg:
+            try:
+                sys.path.insert(0, str(Path(__file__).parent))
+                import turg as turg_mod
+                market = turg_mod.cpv_stats(turg_mod.load_history(24))
+            except Exception as ex:  # turuandmed on lisainfo, radar töötab ka ilma
+                print(f"Turuandmeid ei saanud: {ex}", file=sys.stderr)
+        out = render_radar(data, scores, a.top, market)
     else:
         ver = Verifier(a.tekst)
-        out = render_report(data, ver, a.luhike)
+        turg_path = Path(a.json).with_name("turg.json")
+        turg = json.loads(turg_path.read_text(encoding="utf-8")) if turg_path.exists() else None
+        out = render_report(data, ver, a.luhike, turg)
         if ver.corpus is not None:
             print(f"Tsitaadid: {ver.ok} leitud sõna-sõnalt, {ver.bad} vajavad käsitsi kontrolli.", file=sys.stderr)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
