@@ -25,7 +25,7 @@ Registri lepingu sõlmimise teadetest (viimased 24 kuud, ~5 600 ehituslepingut) 
 
 **Selgitustaotlus Wordis.** Aruande küsimustest tehakse ametlik kiri (.docx), mille saab saata registri kaudu.
 
-**Iga väide on tõendatav.** Igal leiul on sõnasõnaline tsitaat ja allikas (fail, lehekülg). Renderdaja kontrollib iga tsitaadi masinaga dokumentide tekstist üle (✓ / ⚠). AI teeb mustandi, otsuse teeb inimene.
+**Iga väide on tõendatav.** Igal leiul on sõnasõnaline tsitaat ja allikas (fail, lehekülg). Renderdaja kontrollib iga tsitaadi masinaga dokumentide tekstist üle (✓ / ⚠) ja näitab selle kohta algdokumendi lehel, punase raamiga nagu ülevaataja märge joonisel. AI teeb mustandi, otsuse teeb inimene.
 
 ### Kasutamine
 
@@ -33,7 +33,7 @@ Registri lepingu sõlmimise teadetest (viimased 24 kuud, ~5 600 ehituslepingut) 
 2. Soovi korral loo `firma-profiil.md`: tegevusala, piirkonnad, mahud, referentsid, riskitaluvus. Kui seda pole, kasutab skill näidisprofiili.
 3. Küsi: „leia hanked” või „kontrolli hanget <viitenumber>”.
 
-Nõuded: Python 3.10+ (ainult standardteek) ja internet. PDF-ide jaoks on soovitatav `pdftotext` (poppler-utils), DOCX-ide jaoks valikuliselt `pandoc`.
+Nõuded: Python 3.10+ (ainult standardteek) ja internet. PDF-ide jaoks on soovitatav poppler-utils (`pdftotext`, `pdftoppm`; ka lehepiltide jaoks), DOCX-ide jaoks valikuliselt `pandoc`, Wordi lehepiltide ja vanade Office failide jaoks LibreOffice.
 
 Sobib kokku nende skillidega: [`anthropics/skills`](https://skills.sh/anthropics/skills) **docx** (selgitustaotlus Wordi), **xlsx** (hinnatabeli täitmine) ja **pdf**.
 

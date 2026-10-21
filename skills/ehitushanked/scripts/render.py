@@ -94,6 +94,11 @@ h3.alam { font-size: 15px; font-weight: 650; margin: 22px 0 6px; }
 .tsitaat q { display: block; quotes: none; background: var(--wash); padding: 8px 11px; font-size: 14px; }
 .tsitaat figcaption { font-size: 12.5px; color: var(--pencil); margin-top: 4px; }
 .kontroll { font-size: 12px; color: var(--pencil); }
+.leht { margin-top: 8px; border: 1px solid var(--rule); background: #fff; line-height: 0; padding: 6px 4px; }
+.leht-allkiri { font-size: 12px; color: var(--pencil); margin-top: 3px; overflow-wrap: anywhere; }
+.võrdlus > * { min-width: 0; }
+.leht svg { width: 100%; height: auto; display: block; overflow: visible; }
+.leht rect { fill: rgba(200, 36, 47, 0.07); stroke: #c8242f; stroke-width: 2.5; }
 .kontroll.ei { color: var(--amber); font-weight: 600; }
 .allikas-puudub { color: var(--redline); }
 .leid .järeldus { margin: 10px 0 0; font-size: 14.5px; }
@@ -329,30 +334,57 @@ def norm(t: str) -> str:
 
 
 class Verifier:
-    """Kontrollib, et tsitaat leidub hankedokumentide tekstis sõna-sõnalt (tühikud ja kirjavahemärgid ei loe)."""
+    """Kontrollib, et tsitaat leidub hankedokumentide tekstis sõna-sõnalt (tühikud ja kirjavahemärgid ei loe).
+    Kui hanke kaustas on algdokumendid (rh.py fetch hoiab need alles), lõikab välja ka lehe, kus tsitaat asub."""
 
-    def __init__(self, tekst_dir: str | None):
-        self.corpus = None
+    def __init__(self, tekst_dir: str | None, pages: bool = True):
+        self.files: list[tuple[str, str]] | None = None
+        self.lehed = None
         if tekst_dir and Path(tekst_dir).is_dir():
-            self.corpus = " ".join(norm(f.read_text(encoding="utf-8", errors="ignore"))
-                                   for f in sorted(Path(tekst_dir).glob("*.txt")))
-        self.ok = self.bad = 0
+            self.files = [(f.name, norm(f.read_text(encoding="utf-8", errors="ignore")))
+                          for f in sorted(Path(tekst_dir).glob("*.txt"))]
+            if pages:
+                try:
+                    sys.path.insert(0, str(Path(__file__).parent))
+                    from leht import Lehed
+                    self.lehed = Lehed(Path(tekst_dir).parent)
+                except Exception as ex:  # lehepildid on lisainfo
+                    print(f"Lehepilte ei saa teha: {ex}", file=sys.stderr)
+        self.ok = self.bad = self.shown = 0
 
-    def mark(self, quote) -> str:
-        if self.corpus is None or not quote:
-            return ""
-        if norm(quote) in self.corpus:
-            self.ok += 1
-            return '<span class="kontroll">Tsitaat leitud dokumendist.</span>'
-        self.bad += 1
-        return '<span class="kontroll ei">Tsitaati ei leitud sõna-sõnalt, kontrolli allikast.</span>'
+    @property
+    def corpus(self):
+        return self.files
+
+    def where(self, quote: str) -> str | None:
+        nq = norm(quote)
+        return next((name for name, t in self.files or [] if nq and nq in t), None)
+
+    def mark(self, quote) -> tuple[str, str]:
+        """(märge, lehepildi HTML)"""
+        if self.files is None or not quote:
+            return "", ""
+        name = self.where(quote)
+        if not name:
+            self.bad += 1
+            return '<span class="kontroll ei">Tsitaati ei leitud sõna-sõnalt, kontrolli allikast.</span>', ""
+        self.ok += 1
+        sn = self.lehed.snippet(name, quote) if self.lehed else None
+        if not sn:
+            return '<span class="kontroll">Tsitaat leitud dokumendist.</span>', ""
+        self.shown += 1
+        rects = "".join(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="5"/>' for x, y, w, h in sn["read"])
+        img = (f'<svg viewBox="0 0 {sn["w"]} {sn["h"]}" role="img" aria-label="Lõige dokumendist, tsitaat märgitud punasega">'
+               f'<image href="data:image/jpeg;base64,{sn["jpeg"]}" width="{sn["w"]}" height="{sn["h"]}"/>{rects}</svg>')
+        return ('<span class="kontroll">Tsitaat leitud dokumendist.</span>',
+                f'<div class="leht">{img}</div><div class="leht-allkiri">{e(sn["fail"])}, lk {sn["lk"]}</div>')
 
 
-def quote(q: str | None, source: str | None, ver: Verifier) -> str:
+def quote(q: str | None, source: str | None, ver: Verifier, page: bool = True) -> str:
     src = e(source) if source else '<span class="allikas-puudub">allikas puudub</span>'
-    mark = ver.mark(q)
+    mark, leht = ver.mark(q)
     return (f'<figure class="tsitaat"><q>{e(q)}</q><figcaption>{src}'
-            f'{" " + mark if mark else ""}</figcaption></figure>')
+            f'{" " + mark if mark else ""}</figcaption>{leht if page else ""}</figure>')
 
 
 def pct(x) -> str:
@@ -566,6 +598,7 @@ def main() -> None:
     a_ = sp.add_parser("aruanne")
     a_.add_argument("json")
     a_.add_argument("--tekst", help="hanke tekst/ kaust tsitaatide kontrolliks")
+    a_.add_argument("--ilma-lehtedeta", action="store_true", help="ära lisa tsitaatide juurde lehepilte")
     a_.add_argument("--luhike", action="store_true", help="ainult otsus ja 3+3 olulisemat leidu (vestlusesse põimimiseks)")
     a_.add_argument("--out", required=True)
     for sub in (r, a_):
@@ -586,12 +619,13 @@ def main() -> None:
                 print(f"Turuandmeid ei saanud: {ex}", file=sys.stderr)
         out = render_radar(data, scores, a.top, market)
     else:
-        ver = Verifier(a.tekst)
+        ver = Verifier(a.tekst, pages=not a.ilma_lehtedeta)
         turg_path = Path(a.json).with_name("turg.json")
         turg = json.loads(turg_path.read_text(encoding="utf-8")) if turg_path.exists() else None
         out = render_report(data, ver, a.luhike, turg)
         if ver.corpus is not None:
-            print(f"Tsitaadid: {ver.ok} leitud sõna-sõnalt, {ver.bad} vajavad käsitsi kontrolli.", file=sys.stderr)
+            print(f"Tsitaadid: {ver.ok} leitud sõna-sõnalt, {ver.bad} vajavad käsitsi kontrolli, "
+                  f"{ver.shown} lehepildiga.", file=sys.stderr)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(out, encoding="utf-8")
     print(f"HTML valmis: {Path(a.out).resolve()}", file=sys.stderr)

@@ -32,6 +32,7 @@ UA = {"User-Agent": "ehitushanked-skill/1.0 (+https://skills.sh)", "Accept": "ap
 
 TEXT_EXT = {".pdf", ".docx", ".docm", ".xlsx", ".xlsm", ".txt", ".csv", ".xml", ".rtf", ".md",
             ".doc", ".odt", ".xls", ".ods"}
+ORIG_EXT = {".pdf", ".docx", ".docm"}  # hoitakse alles, et aruanne saaks näidata tsitaati lehel
 OFFICE_OLD = {".doc", ".odt", ".rtf", ".xls", ".ods"}
 # Teenuste hulgast võtame radarisse ehitusega seotud tööd (projekteerimine, järelevalve jne)
 SERVICE_KEYWORDS = re.compile(
@@ -376,6 +377,7 @@ def cmd_fetch(a: argparse.Namespace) -> None:
     h = get_json(f"/procurement/{pid}/header-info")
     d = Path(a.dir or f"ehitushanked/{h.get('referenceNumber') or pid}")
     (d / "tekst").mkdir(parents=True, exist_ok=True)
+    (d / "originaalid").mkdir(exist_ok=True)
     ver = get_json(f"/procurement/{pid}/latest-version").get("value")
     g = get_json(f"/proc-vers/{ver}/general-info")
     g.pop("procedureTypes", None)
@@ -419,8 +421,13 @@ def cmd_fetch(a: argparse.Namespace) -> None:
         out = d / "tekst" / (safe(display.replace("/", "__")) + ".txt")
         out.write_text(f"# ALLIKAS: {display}\n{txt}", encoding="utf-8")
         chars = len(re.sub(r"\s+", "", txt))
-        index.append({"fail": display, "mb": len(data) / 1e6, "lk": pages, "tähemärke": chars,
-                      "tekst": str(out.relative_to(d)), "olek": "tekst" if chars > 200 else "vähe teksti (joonis?)"})
+        row = {"fail": display, "mb": len(data) / 1e6, "lk": pages, "tähemärke": chars,
+               "tekst": str(out.relative_to(d)), "olek": "tekst" if chars > 200 else "vähe teksti (joonis?)"}
+        if ext in ORIG_EXT:
+            orig = d / "originaalid" / out.stem
+            orig.write_bytes(data)
+            row["originaal"] = str(orig.relative_to(d))
+        index.append(row)
 
     log("Pakin lahti ja eraldan teksti…")
     with zipfile.ZipFile(pkg) as z:
@@ -435,6 +442,9 @@ def cmd_fetch(a: argparse.Namespace) -> None:
                 index.append({"fail": zi.filename, "mb": zi.file_size / 1e6, "olek": "ainult nimi"})
 
     classify(index)
+    for r in index:  # originaalid jäävad alles ainult põhidokumentidele ja seletuskirjadele (aruande lehepildid)
+        if r.get("originaal") and r["grupp"] not in "AB":
+            (d / r.pop("originaal")).unlink(missing_ok=True)
     (d / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=1), encoding="utf-8")
     (d / "INDEX.md").write_text(render_index(index, h, g, pid), encoding="utf-8")
     n_txt = sum(1 for r in index if r["olek"] == "tekst")

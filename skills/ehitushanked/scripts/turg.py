@@ -16,6 +16,7 @@ import concurrent.futures as cf
 import datetime as dt
 import json
 import os
+import re
 import statistics
 import sys
 import time
@@ -64,6 +65,23 @@ def num(x) -> float | None:
 
 # ---------------------------------------------------------------- parsimine
 
+LEGAL = [(re.compile(r"^(aktsiaselts|as)\s+|\s+(aktsiaselts|as)$", re.I), "AS"),
+         (re.compile(r"^(osaühing|oü)\s+|\s+(osaühing|oü)$", re.I), "OÜ")]
+
+
+def firma(name: str) -> str:
+    """Ühtne kuju: „aktsiaselts TARTU EHITUS” → „Tartu Ehitus AS”, „OÜ Nordlin Ehitus” → „Nordlin Ehitus OÜ”."""
+    n = " ".join((name or "").split())
+    form = ""
+    for rx, short in LEGAL:
+        if rx.search(n):
+            n, form = rx.sub("", n).strip(), short
+            break
+    if n.isupper() and len(n) > 5:
+        n = " ".join(w if len(w) <= 3 else w.capitalize() for w in n.split())
+    return f"{n} {form}".strip()
+
+
 def parse_awards(xml: bytes) -> list[dict]:
     """Ehitustööde (CPV 45*) võitnud osad lepingu sõlmimise teadetest."""
     out = []
@@ -83,7 +101,7 @@ def parse_awards(xml: bytes) -> list[dict]:
                 "piirkond": c.findtext("cac:PostalAddress/cbc:CountrySubentityCode", namespaces=NS),
                 "linn": c.findtext("cac:PostalAddress/cbc:CityName", namespaces=NS),
             }
-        parties = {tp.findtext("cbc:ID", namespaces=NS): [orgs.get(t.findtext("cbc:ID", namespaces=NS), {}).get("nimi", "?")
+        parties = {tp.findtext("cbc:ID", namespaces=NS): [firma(orgs.get(t.findtext("cbc:ID", namespaces=NS), {}).get("nimi", "?"))
                                                           for t in tp.findall("efac:Tenderer", NS)]
                    for tp in n.iter(f"{{{EFAC}}}TenderingParty")}
         tenders = {}
@@ -114,10 +132,16 @@ def parse_awards(xml: bytes) -> list[dict]:
             if lr.findtext("cbc:TenderResultCode", namespaces=NS) != "selec-w":
                 continue
             lot_id = lr.findtext("efac:TenderLot/cbc:ID", namespaces=NS)
-            bids = None
+            bids, counts = None, []
             for st in lr.findall("efac:ReceivedSubmissionsStatistics", NS):
+                v = num(st.findtext("efbc:StatisticsNumeric", namespaces=NS))
                 if st.findtext("efbc:StatisticsCode", namespaces=NS) == "tenders":
-                    bids = num(st.findtext("efbc:StatisticsNumeric", namespaces=NS))
+                    bids = v
+                elif v is not None:
+                    counts.append(v)
+            if bids is None and counts:
+                # alates 02.2026 jätab register StatisticsCode välja; pakkumuste koguarv on alamliikidest suurim
+                bids = max(counts)
             amt, tp = tenders.get(lr.findtext("efac:LotTender/cbc:ID", namespaces=NS), (None, None))
             lot = lots.get(lot_id, {})
             if lot.get("cpv") and not lot["cpv"].startswith("45"):
@@ -165,7 +189,7 @@ def month_list(months: int) -> list[tuple[int, int]]:
 
 def load_month(kind: str, y: int, m: int) -> tuple[str, object]:
     CACHE.mkdir(parents=True, exist_ok=True)
-    f = CACHE / f"{kind}-{y}-{m:02d}.json"
+    f = CACHE / (f"{kind}-{y}-{m:02d}.v2.json" if kind == "notice_award" else f"{kind}-{y}-{m:02d}.json")
     current = (y, m) == (dt.date.today().year, dt.date.today().month)
     if f.exists() and not (current and time.time() - f.stat().st_mtime > 6 * 3600):
         return kind, json.loads(f.read_text(encoding="utf-8"))
@@ -244,11 +268,11 @@ def cmd_vordle(a: argparse.Namespace) -> None:
     ratio_basis = f"CPV {cpv[:3]}*" + (f", eelarve {a.maksumus/3/1e6:.1f}–{a.maksumus*3/1e6:.1f} M€".replace(".", ",") if a.maksumus else "")
     winners: dict[str, dict] = defaultdict(lambda: {"voite": 0, "summa": 0.0, "pakkujaid": []})
     for x in sel:
-        for w in x["voitja"]:
-            winners[w]["voite"] += 1
-            winners[w]["summa"] += x["summa"] / max(1, len(x["voitja"]))
-            if x["pakkumusi"]:
-                winners[w]["pakkujaid"].append(x["pakkumusi"])
+        w = " + ".join(sorted(firma(n) for n in x["voitja"])) or "?"  # ühispakkujad ühe reana
+        winners[w]["voite"] += 1
+        winners[w]["summa"] += x["summa"] or 0
+        if x["pakkumusi"]:
+            winners[w]["pakkujaid"].append(x["pakkumusi"])
     top = sorted(winners.items(), key=lambda kv: (-kv[1]["voite"], -kv[1]["summa"]))[:10]
     res = {
         "alus": basis, "periood_kuud": a.kuud, "allikas": "riigihangete register, lepingu sõlmimise teated (avaandmed)",

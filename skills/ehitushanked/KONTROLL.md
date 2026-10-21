@@ -84,7 +84,7 @@ Kirjuta `ehitushanked/<viitenumber>/aruanne.json` (skeem: SKEEMID.md → Hankeko
 python3 SKILL_DIR/scripts/render.py aruanne ehitushanked/<nr>/aruanne.json --tekst ehitushanked/<nr>/tekst --out ehitushanked/<nr>/aruanne.html
 ```
 
-Skript teatab, mitu tsitaati leiti sõna-sõnalt. Iga „⚠ kontrolli” tsitaadi puhul ava allikas, paranda tsitaat täpseks koopiaks ja renderda uuesti. Valmis, kui kõik tsitaadid on ✓ või leid on eemaldatud.
+Skript teatab, mitu tsitaati leiti sõna-sõnalt ja mitmele lisati lehepilt: lõige algdokumendi lehest, tsitaat punase raamiga (vajab `originaalid/` kausta, mille `rh.py fetch` alles hoiab). Tsitaat, mis on kopeeritud allikast täpselt, saab lehepildi; parafraas ei saa. Iga „⚠ kontrolli” tsitaadi puhul ava allikas, paranda tsitaat täpseks koopiaks ja renderda uuesti. Valmis, kui kõik tsitaadid on ✓ või leid on eemaldatud.
 
 Tee alati ka selgitustaotlus Wordi failina:
 
