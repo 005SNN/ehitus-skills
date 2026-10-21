@@ -43,13 +43,18 @@ ol.sammud li::before { content: counter(s) "."; font-weight: 700; font-size: 18p
 ol.sammud b { display: block; }
 ol.sammud span { color: var(--pencil); font-size: 15px; }
 
-.näide { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: start; }
-.leid { border-left: 3px solid var(--redline); padding: 2px 0 2px 14px; margin: 0 0 16px; }
-.leid q { display: block; quotes: none; background: var(--wash); padding: 7px 10px; font-size: 14.5px; margin: 6px 0 4px; }
-.leid small { color: var(--pencil); font-size: 13px; }
-.numbrid { border: 1px solid var(--rule); }
-.numbrid div { padding: 10px 14px; border-bottom: 1px solid var(--rule); }
-.numbrid div:last-child { border-bottom: 0; }
+.selgitus { color: var(--pencil); margin: -4px 0 18px; font-size: 15px; }
+.leid { border-left: 3px solid var(--redline); padding: 0 0 0 16px; margin: 0 0 30px; }
+.leid h3 { font-size: 17px; font-weight: 650; margin: 0 0 4px; }
+.leid p { margin: 0 0 10px; }
+.leht { margin: 0; }
+.leht svg { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: #fff; }
+.leht rect { fill: rgba(200, 36, 47, 0.07); stroke: var(--redline); stroke-width: 2.5; }
+.leht figcaption { font-size: 13px; color: var(--pencil); margin-top: 4px; }
+.numbrid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); margin: 8px 0 0; }
+.numbrid div { padding: 10px 14px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.numbrid div:nth-child(3n) { border-right: 0; }
+.numbrid div:nth-last-child(-n+3) { border-bottom: 0; }
 .numbrid dt { font-size: 13px; color: var(--pencil); }
 .numbrid dd { margin: 0; font-weight: 650; font-size: 17px; }
 
@@ -69,7 +74,12 @@ footer { margin-top: 52px; padding-top: 12px; border-top: 1px solid var(--rule);
   .tempel h1 { font-size: 24px; }
   .tempel dl { grid-template-columns: 1fr; }
   .tempel dl div { border-right: 0; border-top: 1px solid var(--rule); }
-  .näide, .paigaldus { grid-template-columns: 1fr; }
+  .paigaldus { grid-template-columns: 1fr; }
+  .numbrid { grid-template-columns: 1fr 1fr; }
+  .numbrid div, .numbrid div:nth-child(3n), .numbrid div:nth-last-child(-n+3) { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .numbrid div:nth-child(2n) { border-right: 0; }
+  .numbrid div:nth-last-child(-n+2) { border-bottom: 0; }
+  .lingid a { flex-direction: column; gap: 2px; }
 }
 </style>
 </head>
@@ -80,56 +90,57 @@ footer { margin-top: 52px; padding-top: 12px; border-top: 1px solid var(--rule);
   <div class="pea">
     <p class="liik">Eesti Ehituskonverents 2026</p>
     <h1>Üks link sisse, kogu hange läbi loetud</h1>
-    <p class="lead">Kleebi riigihangete registri link. Agent laeb alla kõik hanke dokumendid, loeb need läbi ja ütleb, kas tasub pakkuda, mis on dokumentides vastuolus ja mis hinnaga sarnased tööd võidetakse.</p>
+    <p class="lead">Kleebi riigihangete registri link. Agent laeb alla kõik hanke dokumendid, loeb need läbi ja ütleb, kas tasub pakkuda, mis on dokumentides vastuolus ja mis hinnaga sarnased tööd võidetakse. Iga leiu juures on lehekülg, kust see pärit on.</p>
   </div>
   <dl>
-    <div><dt>Andmed</dt><dd>riigihanked.riik.ee, Statistikaamet</dd></div>
-    <div><dt>Töötab</dt><dd>Claude Code, Codex, Cursor</dd></div>
+    <div><dt>Keila kooli hankepakett</dt><dd>920 faili, 1 212 lehekülge</dd></div>
+    <div><dt>Läbi loetud</dt><dd>umbes 30 minutiga</dd></div>
     <div><dt>Kood</dt><dd><a href="https://github.com/005SNN/ehitus-skills">github.com/005SNN/ehitus-skills</a></dd></div>
   </dl>
 </header>
 
+<h2>Mida see leidis: Keila Kooli Pargimaja, 7,0 M€</h2>
+<p class="selgitus">Kolm leidu 18 vastuolust ja 14 lepingu riskist. Punane raam on agendi märge algdokumendi lehel.</p>
+
+<article class="leid">
+  <h3>Energiaklass ei klapi</h3>
+  <p>Projekteerija kirjutab, et ETA 99 vastab A-klassile. Sama dokumendi skaala järgi on haridushoone A-klass ETA ≤ 95. Hoone peab olema liginullenergiahoone ja saab RTK toetust.</p>
+  <figure class="leht"><svg viewBox="0 0 780 186" role="img" aria-label="Lõige hankedokumendist, tsitaat märgitud punasega"><image href="keila/v1.jpg" width="780" height="186"/><rect x="153" y="67" width="497" height="32" rx="5"/></svg><figcaption>Energiamärgise seletuskiri, lk 6</figcaption></figure>
+</article>
+
+<article class="leid">
+  <h3>Päikesejaam annab poole vähem, kui leping nõuab</h3>
+  <p>Tehniline kirjeldus nõuab 23 912 kWh aastas ja sihtväärtuse mittesaavutamine on töövõtja garantiitöö. Projekteeritud jaam toodab 12 800 kWh.</p>
+  <figure class="leht"><svg viewBox="0 0 729 98" role="img" aria-label="Lõige hankedokumendist, tsitaat märgitud punasega"><image href="keila/v3.jpg" width="729" height="98"/><rect x="15" y="11" width="699" height="26" rx="5"/><rect x="15" y="39" width="144" height="26" rx="5"/></svg><figcaption>Energiamärgise seletuskiri, lk 5</figcaption></figure>
+</article>
+
+<article class="leid">
+  <h3>Leppetrahvil puudub ülempiir</h3>
+  <p>Trahv on kuni 0,05% lepingu hinnast päevas, lagi puudub. ETÜ 2013 p 12.2.3 piirab leppetrahvid 5%-ga lepingu hinnast.</p>
+  <figure class="leht"><svg viewBox="0 0 792 165" role="img" aria-label="Lõige hankedokumendist, tsitaat märgitud punasega"><image href="keila/r1.jpg" width="792" height="165"/><rect x="28" y="72" width="550" height="26" rx="5"/></svg><figcaption>Hankelepingu projekt, p 12.3</figcaption></figure>
+</article>
+
+<dl class="numbrid">
+  <div><dt>Soovitus</dt><dd>Pakkuda tingimustel</dd></div>
+  <div><dt>Vastuolusid dokumentides</dt><dd>18</dd></div>
+  <div><dt>Lepingu riskiridu</dt><dd>14</dd></div>
+  <div><dt>Tõenäoline võiduhind</dt><dd>5,87–7,29 M€</dd></div>
+  <div><dt>Pakkujaid sarnastes hangetes</dt><dd>mediaan 5,5</dd></div>
+  <div><dt>Tsitaate dokumentidest leitud</dt><dd>50 / 50</dd></div>
+</dl>
+
+<ul class="lingid">
+  <li><a href="keila/aruanne.html">Ava kogu aruanne <span>vastuolud ja riskid koos lehtedega, konkurendid</span></a></li>
+  <li><a href="keila/selgitustaotlus.docx" download>Lae alla selgitustaotlus <span>Word, 24 küsimust hankijale</span></a></li>
+  <li><a href="radar.html">Hankeradar 21.10.2026 <span>115 avatud ehitushanget sobivuse järgi</span></a></li>
+</ul>
+
 <h2>Kuidas see käib</h2>
 <ol class="sammud">
   <li><div><b>Kleebi hanke link või viitenumber</b><span>Muud juhist pole vaja. Firma profiil (tegevusala, mahud, piirkonnad) on ühes failis.</span></div></li>
-  <li><div><b>Agent laeb kogu paketi alla ja loeb läbi</b><span>Keila kooli hankes 920 faili ja 1212 lehekülge: leping, tehniline kirjeldus, hinnatabel ja kõigi erialade seletuskirjad. Kaheksa lugejat töötab paralleelselt.</span></div></li>
-  <li><div><b>Saad aruande ja kirja hankijale</b><span>Vastuolud dokumentide vahel, lepingu riskid võrreldes ETÜ 2013-ga, konkurendid ja tõenäoline võiduhind, valmis selgitustaotlus Wordis.</span></div></li>
+  <li><div><b>Agent laeb kogu paketi alla ja loeb läbi</b><span>Leping, tehniline kirjeldus, hinnatabel ja kõigi erialade seletuskirjad. Kaheksa lugejat töötab paralleelselt, iga tsitaat kontrollitakse algdokumendist üle.</span></div></li>
+  <li><div><b>Saad aruande ja kirja hankijale</b><span>Vastuolud dokumentide vahel, lepingu riskid võrreldes ETÜ 2013-ga, konkurendid ja tõenäoline võiduhind registri lepingutest, valmis selgitustaotlus Wordis.</span></div></li>
 </ol>
-
-<h2>Näide: Keila Kooli Pargimaja, 7,0 M€</h2>
-<div class="näide">
-  <div>
-    <article class="leid">
-      <b>Energiaklass ei klapi</b>
-      <q>ETA = 99 kWh/(m²a), mis vastab A-energiaklassi nõuetele</q>
-      <small>Sama dokumendi skaala järgi on haridushoone A-klass ETA ≤ 95. Hoone on liginullenergiahoone ja RTK toetusega.</small>
-    </article>
-    <article class="leid">
-      <b>Päikesejaam annab poole vähem</b>
-      <q>Aastane arvutuslik elektrienergia toodang on 12800 kWh</q>
-      <small>Tehniline kirjeldus nõuab 23 912 kWh aastas ja sihtväärtuse mittesaavutamine on töövõtja garantiitöö.</small>
-    </article>
-    <article class="leid">
-      <b>Leppetrahvil puudub ülempiir</b>
-      <q>Põhiline kasutusvalmidus (vt p 7.4.): kuni 0,05% lepingu hinnast (km-ga) päevas</q>
-      <small>ETÜ 2013 p 12.2.3 piirab leppetrahvid 5%-ga lepingu hinnast.</small>
-    </article>
-  </div>
-  <dl class="numbrid">
-    <div><dt>Soovitus</dt><dd>Pakkuda tingimustel</dd></div>
-    <div><dt>Vastuolusid dokumentides</dt><dd>18</dd></div>
-    <div><dt>Lepingu riskiridu</dt><dd>14</dd></div>
-    <div><dt>Tõenäoline võiduhind</dt><dd>5,87–7,29 M€</dd></div>
-    <div><dt>Pakkujaid sarnastes hangetes</dt><dd>mediaan 5</dd></div>
-    <div><dt>Tsitaate dokumentidest kontrollitud</dt><dd>50 / 50</dd></div>
-  </dl>
-</div>
-
-<ul class="lingid">
-  <li><a href="keila/aruanne.html">Ava kogu aruanne <span>vastuolud, riskid, konkurendid</span></a></li>
-  <li><a href="keila/selgitustaotlus.docx" download>Lae alla selgitustaotlus <span>Word, 24 küsimust</span></a></li>
-  <li><a href="radar.html">Hankeradar 21.10.2026 <span>115 avatud ehitushanget sobivuse järgi</span></a></li>
-</ul>
 
 <h2>Proovi ise</h2>
 <div class="paigaldus">
