@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ehitushanked: üks link, kogu hange läbi loetud</title>
+<style>
+:root {
+  --paper: #ffffff;
+  --ink: #1c2430;
+  --pencil: #5d6673;
+  --rule: #c9ced6;
+  --redline: #c8242f;
+  --wash: #f3f4f6;
+  --font: "Aptos", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; color: var(--ink); font: 16px/1.6 var(--font); font-variant-numeric: tabular-nums; }
+.doc { max-width: 860px; margin: 0 auto; padding: 44px 24px 64px; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-color: var(--rule); }
+a:hover { text-decoration-color: var(--ink); }
+a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.tempel { border: 2px solid var(--ink); }
+.tempel .pea { padding: 20px 22px 18px; border-bottom: 1px solid var(--ink); }
+.tempel .liik { font-size: 14px; color: var(--pencil); margin: 0 0 6px; }
+.tempel h1 { font-size: 30px; line-height: 1.2; font-weight: 650; margin: 0; letter-spacing: -0.015em; }
+.tempel .lead { margin: 10px 0 0; font-size: 17px; max-width: 60ch; }
+.tempel dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; }
+.tempel dl div { padding: 9px 22px 11px; border-right: 1px solid var(--rule); }
+.tempel dl div:last-child { border-right: 0; }
+.tempel dt { font-size: 12.5px; color: var(--pencil); }
+.tempel dd { margin: 0; font-weight: 600; }
+
+h2 { font-size: 19px; font-weight: 650; margin: 44px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--ink); }
+p { max-width: 68ch; }
+
+ol.sammud { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+ol.sammud li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+ol.sammud li::before { content: counter(s) "."; font-weight: 700; font-size: 18px; }
+ol.sammud b { display: block; }
+ol.sammud span { color: var(--pencil); font-size: 15px; }
+
+.näide { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: start; }
+.leid { border-left: 3px solid var(--redline); padding: 2px 0 2px 14px; margin: 0 0 16px; }
+.leid q { display: block; quotes: none; background: var(--wash); padding: 7px 10px; font-size: 14.5px; margin: 6px 0 4px; }
+.leid small { color: var(--pencil); font-size: 13px; }
+.numbrid { border: 1px solid var(--rule); }
+.numbrid div { padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+.numbrid div:last-child { border-bottom: 0; }
+.numbrid dt { font-size: 13px; color: var(--pencil); }
+.numbrid dd { margin: 0; font-weight: 650; font-size: 17px; }
+
+.lingid { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 8px; }
+.lingid a { display: flex; justify-content: space-between; gap: 12px; border: 1px solid var(--ink); padding: 11px 14px; text-decoration: none; font-weight: 600; }
+.lingid a span { font-weight: 400; color: var(--pencil); font-size: 14px; }
+.lingid a:hover { background: var(--ink); color: var(--paper); }
+.lingid a:hover span { color: var(--paper); }
+
+.paigaldus { display: grid; grid-template-columns: 1fr 150px; gap: 28px; align-items: center; }
+pre { background: var(--wash); padding: 14px 16px; font-size: 15px; overflow-x: auto; margin: 10px 0; }
+.paigaldus img { width: 150px; height: 150px; image-rendering: pixelated; border: 1px solid var(--rule); }
+footer { margin-top: 52px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--pencil); }
+
+@media (max-width: 720px) {
+  .doc { padding: 22px 16px 44px; }
+  .tempel h1 { font-size: 24px; }
+  .tempel dl { grid-template-columns: 1fr; }
+  .tempel dl div { border-right: 0; border-top: 1px solid var(--rule); }
+  .näide, .paigaldus { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main class="doc">
+
+<header class="tempel">
+  <div class="pea">
+    <p class="liik">Eesti Ehituskonverents 2026</p>
+    <h1>Üks link sisse, kogu hange läbi loetud</h1>
+    <p class="lead">Kleebi riigihangete registri link. Agent laeb alla kõik hanke dokumendid, loeb need läbi ja ütleb, kas tasub pakkuda, mis on dokumentides vastuolus ja mis hinnaga sarnased tööd võidetakse.</p>
+  </div>
+  <dl>
+    <div><dt>Andmed</dt><dd>riigihanked.riik.ee, Statistikaamet</dd></div>
+    <div><dt>Töötab</dt><dd>Claude Code, Codex, Cursor</dd></div>
+    <div><dt>Kood</dt><dd><a href="https://github.com/005SNN/ehitus-skills">github.com/005SNN/ehitus-skills</a></dd></div>
+  </dl>
+</header>
+
+<h2>Kuidas see käib</h2>
+<ol class="sammud">
+  <li><div><b>Kleebi hanke link või viitenumber</b><span>Muud juhist pole vaja. Firma profiil (tegevusala, mahud, piirkonnad) on ühes failis.</span></div></li>
+  <li><div><b>Agent laeb kogu paketi alla ja loeb läbi</b><span>Keila kooli hankes 920 faili ja 1212 lehekülge: leping, tehniline kirjeldus, hinnatabel ja kõigi erialade seletuskirjad. Kaheksa lugejat töötab paralleelselt.</span></div></li>
+  <li><div><b>Saad aruande ja kirja hankijale</b><span>Vastuolud dokumentide vahel, lepingu riskid võrreldes ETÜ 2013-ga, konkurendid ja tõenäoline võiduhind, valmis selgitustaotlus Wordis.</span></div></li>
+</ol>
+
+<h2>Näide: Keila Kooli Pargimaja, 7,0 M€</h2>
+<div class="näide">
+  <div>
+    <article class="leid">
+      <b>Energiaklass ei klapi</b>
+      <q>ETA = 99 kWh/(m²a), mis vastab A-energiaklassi nõuetele</q>
+      <small>Sama dokumendi skaala järgi on haridushoone A-klass ETA ≤ 95. Hoone on liginullenergiahoone ja RTK toetusega.</small>
+    </article>
+    <article class="leid">
+      <b>Päikesejaam annab poole vähem</b>
+      <q>Aastane arvutuslik elektrienergia toodang on 12800 kWh</q>
+      <small>Tehniline kirjeldus nõuab 23 912 kWh aastas ja sihtväärtuse mittesaavutamine on töövõtja garantiitöö.</small>
+    </article>
+    <article class="leid">
+      <b>Leppetrahvil puudub ülempiir</b>
+      <q>Põhiline kasutusvalmidus (vt p 7.4.): kuni 0,05% lepingu hinnast (km-ga) päevas</q>
+      <small>ETÜ 2013 p 12.2.3 piirab leppetrahvid 5%-ga lepingu hinnast.</small>
+    </article>
+  </div>
+  <dl class="numbrid">
+    <div><dt>Soovitus</dt><dd>Pakkuda tingimustel</dd></div>
+    <div><dt>Vastuolusid dokumentides</dt><dd>18</dd></div>
+    <div><dt>Lepingu riskiridu</dt><dd>14</dd></div>
+    <div><dt>Tõenäoline võiduhind</dt><dd>5,87–7,29 M€</dd></div>
+    <div><dt>Pakkujaid sarnastes hangetes</dt><dd>mediaan 5</dd></div>
+    <div><dt>Tsitaate dokumentidest kontrollitud</dt><dd>50 / 50</dd></div>
+  </dl>
+</div>
+
+<ul class="lingid">
+  <li><a href="keila/aruanne.html">Ava kogu aruanne <span>vastuolud, riskid, konkurendid</span></a></li>
+  <li><a href="keila/selgitustaotlus.docx" download>Lae alla selgitustaotlus <span>Word, 24 küsimust</span></a></li>
+  <li><a href="radar.html">Hankeradar 21.10.2026 <span>115 avatud ehitushanget sobivuse järgi</span></a></li>
+</ul>
+
+<h2>Proovi ise</h2>
+<div class="paigaldus">
+  <div>
+    <p>Paigalda oma agenti ühe käsuga ja küsi eesti keeles, näiteks „leia tänased ehitushanked” või „kontrolli hanget 315920”.</p>
+    <pre>npx skills add 005SNN/ehitus-skills</pre>
+    <p style="color:var(--pencil);font-size:14px">Tasuta, avatud lähtekoodiga (MIT). Vajab Pythonit ja internetti. Kõik andmed tulevad avalikest registritest.</p>
+  </div>
+  <img src="qr.png" alt="QR-kood: github.com/005SNN/ehitus-skills" width="150" height="150">
+</div>
+
+<footer>Aruanded on koostatud automaatselt avalike hankedokumentide põhjal ja on mustand. Enne otsust kontrolli viidatud kohad üle. Radari skoorid on arvutatud näidisfirma profiili järgi.</footer>
+</main>
+</body>
+</html>
