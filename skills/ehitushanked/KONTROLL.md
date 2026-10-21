@@ -1,6 +1,8 @@
 # Hankekontroll
 
-Eesmärk: hanke kogu alusdokumentide pakett → üks HTML-aruanne. Aruandes on **vastuolud dokumentide vahel**, **lepingu riskid võrreldes ETÜ 2013-ga**, kvalifitseerimistingimused, puuduv info, valmis selgitustaotlus ja soovitus PAKKUDA / PAKKUDA TINGIMUSTEL / MITTE PAKKUDA.
+Eesmärk: **üks link sisse, kõik vajalik välja.** Kasutaja kleebib registri lingi (nt `https://riigihanked.riik.ee/rhr-web/#/procurement/10854744/general-info`), viitenumbri või ID ja ei pea midagi muud ütlema. Kui sõnum on ainult link, tee täiskontroll ja kõik väljundid allpool.
+
+Väljund on kolm faili kaustas `ehitushanked/<viitenumber>/`: `aruanne.html` (aruanne koos konkurentide ja hinnatasemega), `selgitustaotlus.docx` (kiri hankijale) ja `aruanne.json`. Hanke kogu alusdokumentide pakett muutub üheks aruandeks. Aruandes on **vastuolud dokumentide vahel**, **lepingu riskid võrreldes ETÜ 2013-ga**, kvalifitseerimistingimused, puuduv info, valmis selgitustaotlus ja soovitus PAKKUDA / PAKKUDA TINGIMUSTEL / MITTE PAKKUDA.
 
 Iga leid on **tõendatav**: sõnasõnaline tsitaat (kuni ~30 sõna, kopeeritud `tekst/` failist täpselt nii, nagu seal on) ja allikas kujul `Fail.pdf, lk 12` või `Hankelepingu projekt, p 9.3`. Renderdaja kontrollib iga tsitaadi masinaga üle. Kokkuvõte või ümbersõnastus tsitaadi väljal kukub kontrollis läbi.
 
@@ -84,10 +86,18 @@ python3 SKILL_DIR/scripts/render.py aruanne ehitushanked/<nr>/aruanne.json --tek
 
 Skript teatab, mitu tsitaati leiti sõna-sõnalt. Iga „⚠ kontrolli” tsitaadi puhul ava allikas, paranda tsitaat täpseks koopiaks ja renderda uuesti. Valmis, kui kõik tsitaadid on ✓ või leid on eemaldatud.
 
-Vestlusesse: otsus, 3 olulisemat leidu ja tee HTML-failini. Paku selgitustaotlust Wordi failina:
+Tee alati ka selgitustaotlus Wordi failina:
 
 ```bash
 python3 SKILL_DIR/scripts/taotlus.py ehitushanked/<nr>/aruanne.json --out ehitushanked/<nr>/selgitustaotlus.docx
 ```
 
 Firma nimi tuleb `firma-profiil.md`-st, kontaktisiku saab lisada `--kontakt "Nimi, tel, e-post"`.
+
+Vestlusesse lühidalt:
+1. otsus ühe lausega;
+2. 3 olulisemat leidu;
+3. tõenäoline võiduhind ja pakkujate arv `turg.json`-ist;
+4. teed kolme failini.
+
+Valmis, kui kõik kolm faili on olemas.
