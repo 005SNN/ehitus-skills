@@ -75,4 +75,10 @@ python3 SKILL_DIR/scripts/render.py aruanne ehitushanked/<nr>/aruanne.json --tek
 
 Skript teatab, mitu tsitaati leiti sõna-sõnalt. Iga „⚠ kontrolli” tsitaadi puhul ava allikas, paranda tsitaat täpseks koopiaks ja renderda uuesti. Valmis, kui kõik tsitaadid on ✓ või leid on eemaldatud.
 
-Vestlusesse: otsus, 3 olulisemat leidu ja tee HTML-failini. Paku selgitustaotluse eksporti Wordi (docx skill), kui see on paigaldatud.
+Vestlusesse: otsus, 3 olulisemat leidu ja tee HTML-failini. Paku selgitustaotlust Wordi failina:
+
+```bash
+python3 SKILL_DIR/scripts/taotlus.py ehitushanked/<nr>/aruanne.json --out ehitushanked/<nr>/selgitustaotlus.docx
+```
+
+Firma nimi tuleb `firma-profiil.md`-st, kontaktisiku saab lisada `--kontakt "Nimi, tel, e-post"`.
