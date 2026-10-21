@@ -30,7 +30,9 @@ API = BASE + "/rhr/api/public/v1"
 WEB = BASE + "/rhr-web/#/procurement/{id}/general-info"
 UA = {"User-Agent": "ehitushanked-skill/1.0 (+https://skills.sh)", "Accept": "application/json"}
 
-TEXT_EXT = {".pdf", ".docx", ".xlsx", ".txt", ".csv", ".xml", ".rtf", ".md"}
+TEXT_EXT = {".pdf", ".docx", ".docm", ".xlsx", ".xlsm", ".txt", ".csv", ".xml", ".rtf", ".md",
+            ".doc", ".odt", ".xls", ".ods"}
+OFFICE_OLD = {".doc", ".odt", ".rtf", ".xls", ".ods"}
 # Teenuste hulgast võtame radarisse ehitusega seotud tööd (projekteerimine, järelevalve jne)
 SERVICE_KEYWORDS = re.compile(
     r"projekteeri|ehitus|omanikujärelevalv|järelevalv|renoveeri|rekonstrueeri|remont|lammut|"
@@ -256,16 +258,34 @@ def xlsx_text(data: bytes) -> str:
     return "\n".join(out)
 
 
+def office_text(data: bytes, ext: str) -> str:
+    """Vanad ja OpenDocument vormingud LibreOffice'i abil (kui see on paigaldatud)."""
+    office = shutil.which("soffice") or shutil.which("libreoffice")
+    if not office:
+        return "[Faili ei saanud lugeda: paigalda LibreOffice (soffice), et lugeda .doc/.xls/.odt/.ods/.rtf faile]"
+    import tempfile
+    target = "csv" if ext in {".xls", ".ods"} else "txt:Text (encoded):UTF8"
+    with tempfile.TemporaryDirectory() as td:
+        src = Path(td) / f"in{ext}"
+        src.write_bytes(data)
+        subprocess.run([office, "--headless", "--convert-to", target, "--outdir", td, str(src)],
+                       capture_output=True, timeout=180)
+        outs = [f for f in Path(td).iterdir() if f.stem == "in" and f.suffix != ext]
+        return outs[0].read_text(encoding="utf-8", errors="replace") if outs else "[Teisendamine ebaõnnestus]"
+
+
 def to_text(name: str, data: bytes) -> tuple[str | None, int]:
     ext = Path(name).suffix.lower()
     try:
         if ext == ".pdf":
             return pdf_text(data)
-        if ext == ".docx":
+        if ext in {".docx", ".docm"}:
             return docx_text(data, name), 0
-        if ext == ".xlsx":
+        if ext in {".xlsx", ".xlsm"}:
             return xlsx_text(data), 0
-        if ext in {".txt", ".csv", ".md", ".xml", ".rtf"}:
+        if ext in OFFICE_OLD:
+            return office_text(data, ext), 0
+        if ext in {".txt", ".csv", ".md", ".xml"}:
             return data.decode("utf-8", "replace"), 0
     except Exception as e:
         return f"[Teksti eraldamine ebaõnnestus: {e}]", 0
@@ -352,10 +372,10 @@ def render_index(index: list[dict], h: dict, g: dict, pid: int) -> str:
 
 def cmd_fetch(a: argparse.Namespace) -> None:
     pid = resolve_id(a.hange)
-    d = Path(a.dir)
-    (d / "tekst").mkdir(parents=True, exist_ok=True)
     log(f"Hanke ID {pid}: laen üldandmed…")
     h = get_json(f"/procurement/{pid}/header-info")
+    d = Path(a.dir or f"ehitushanked/{h.get('referenceNumber') or pid}")
+    (d / "tekst").mkdir(parents=True, exist_ok=True)
     ver = get_json(f"/procurement/{pid}/latest-version").get("value")
     g = get_json(f"/proc-vers/{ver}/general-info")
     g.pop("procedureTypes", None)
@@ -419,6 +439,7 @@ def cmd_fetch(a: argparse.Namespace) -> None:
     (d / "INDEX.md").write_text(render_index(index, h, g, pid), encoding="utf-8")
     n_txt = sum(1 for r in index if r["olek"] == "tekst")
     log(f"Valmis: {len(index)} faili, neist {n_txt} loetava tekstiga → {d}/INDEX.md")
+    print(d)  # töökaust stdout-i, et agent teaks täpset teed
     if not a.hoia_zip:
         pkg.unlink(missing_ok=True)
 
@@ -432,7 +453,7 @@ def main() -> None:
     r.set_defaults(fn=cmd_radar)
     f = sp.add_parser("fetch", help="lae hanke alusdokumendid alla ja eralda tekst")
     f.add_argument("hange", help="viitenumber (315920), registri link või sisemine ID")
-    f.add_argument("--dir", required=True)
+    f.add_argument("--dir", help="vaikimisi ehitushanked/<viitenumber>")
     f.add_argument("--max-mb", type=float, default=25, help="suurim üksikfail, millest teksti eraldada")
     f.add_argument("--hoia-zip", action="store_true", help="ära kustuta allalaaditud paketti")
     f.add_argument("--uuesti", action="store_true", help="lae pakett uuesti alla")

@@ -12,15 +12,15 @@ Kui `ehitushanked/<viitenumber>/aruanne.json` on juba olemas ja kasutaja ei palu
 
 ## Kiirkontroll
 
-Kui kasutaja palub kiiret kontrolli või aega on vähe, tee sammud 1–6 nii: loe ainult A-rühm ja energia (EE), tuleohutuse (TO) ja konstruktsiooni (EK) seletuskirjad; alamagente kuni 4. Märgi metoodikasse „kiirkontroll” ja millised osad jäid lugemata. Kestus ~10 min täiskontrolli ~30 min asemel.
+Kui kasutaja palub kiiret kontrolli või aega on vähe, tee sammud 1–6 nii: loe ainult A-rühm ja energia (EE), tuleohutuse (TO) ja konstruktsiooni (EK) seletuskirjad; alamagente kuni 4. Märgi metoodikasse „kiirkontroll” ja millised osad jäid lugemata. Kestus ~15 min täiskontrolli ~30 min asemel.
 
 ## 1. Lae dokumendid
 
 ```bash
-python3 SKILL_DIR/scripts/rh.py fetch <viitenumber|link> --dir ehitushanked/<viitenumber>
+python3 SKILL_DIR/scripts/rh.py fetch <viitenumber|link>
 ```
 
-Pakett võib olla üle 1 GB: allalaadimine ja tekstiks teisendamine võtab 1–5 min. Käivita taustal ja ütle kasutajale, mis toimub. Kui `ehitushanked/<viitenumber>/INDEX.md` on juba olemas, kasuta seda ja jäta allalaadimine vahele.
+Pakett võib olla üle 1 GB: allalaadimine ja tekstiks teisendamine võtab 1–5 min. Käivita taustal ja ütle kasutajale, mis toimub. Skript kirjutab kõik kausta `ehitushanked/<viitenumber>/` (viitenumber on registri 6-kohaline number, mitte lingis olev sisemine ID) ja trükib selle tee viimase reana. Kui `ehitushanked/<viitenumber>/INDEX.md` on juba olemas, kasuta seda ja jäta allalaadimine vahele.
 
 Valmis, kui `INDEX.md` on olemas. Loe see läbi: failid on rühmitatud **A** (hankedokumendid), **B** (projekti seletuskirjad ja spetsifikatsioonid), **C** (muu tekst) ja **D** (joonised).
 
